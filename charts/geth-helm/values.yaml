@@ -5,3 +5,6 @@ geth:
     tag: stable
   replicaCount: 1
   storageClass: managed-premium-retain
+image:
+  repository: jx3mqubebuild.azurecr.io/spring-financial-group/geth-helm
+  tag: 0.0.11
