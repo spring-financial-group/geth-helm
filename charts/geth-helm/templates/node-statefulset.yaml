@@ -51,7 +51,7 @@ spec:
     spec:
       storageClassName: {{ .Values.geth.storageClass }}
       accessModes:
-        - {{ .Values.geth.accessMode}}
+        - {{ .Values.geth.accessMode | quote }}
       resources:
           requests:
-            storage: {{ .Values.geth.storage}}
+            storage: {{ .Values.geth.storage | quote }}
