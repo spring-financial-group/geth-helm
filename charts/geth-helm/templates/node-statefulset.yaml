@@ -29,13 +29,14 @@ spec:
           limits:
             memory: "8500Mi"
         imagePullPolicy: {{ .Values.geth.imagePullPolicy }}
-        command: ["geth --goerli"]
+        command: ["geth"]
         args:
         - --http
         - --http.corsdomain=*
         - --http.vhosts=*
         - --http.addr=0.0.0.0
         - --cache=1024
+        - --goerli
         ports:
         - name: rpc
           containerPort: 8545
