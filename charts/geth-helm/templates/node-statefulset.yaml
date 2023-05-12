@@ -29,10 +29,9 @@ spec:
           limits:
             memory: "8500Mi"
         imagePullPolicy: {{ .Values.geth.imagePullPolicy }}
-        command: ["geth"]
+        command: ["gethi"]
         args:
         - --http
-        - --goerli
         - --http.corsdomain=*
         - --http.vhosts=*
         - --http.addr=0.0.0.0
