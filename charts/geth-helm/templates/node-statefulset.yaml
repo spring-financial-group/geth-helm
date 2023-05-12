@@ -32,11 +32,11 @@ spec:
         command: ["geth"]
         args:
         - --http
+        - --goerli
         - --http.corsdomain=*
         - --http.vhosts=*
         - --http.addr=0.0.0.0
         - --cache=1024
-        - --goerli
         ports:
         - name: rpc
           containerPort: 8545
