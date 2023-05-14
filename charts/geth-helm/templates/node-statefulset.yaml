@@ -36,6 +36,7 @@ spec:
         - --http.vhosts=*
         - --http.addr=0.0.0.0
         - --cache=1024
+        - --ipcpath=/root/.ethereum
         - --goerli
         ports:
         - name: rpc
