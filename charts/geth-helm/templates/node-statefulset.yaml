@@ -20,6 +20,15 @@ spec:
         app: {{ template "geth-helm.name" . }}
         release: {{ .Release.Name }}
     spec:
+      hostIPC: true
+      initContainers:
+        - name: volumne-permissions
+          image: {{ .Values.geth.image.repository }}:{{ .Values.geth.image.tag }}
+          command: ["/bin/sh"]
+          args: ["-c", "chmod -R 755 /root/.ethereum"]
+          volumeMounts:
+            - name: data
+              mountPath: /root/.ethereum
       containers:
       - name: geth
         image: {{ .Values.geth.image.repository }}:{{ .Values.geth.image.tag }}
@@ -29,14 +38,14 @@ spec:
           limits:
             memory: "8500Mi"
         imagePullPolicy: {{ .Values.geth.imagePullPolicy }}
-        command: ["echo"]
+        command: ["geth"]
         args:
         - --http
         - --http.corsdomain=*
         - --http.vhosts=*
         - --http.addr=0.0.0.0
         - --cache=1024
-        - --ipcpath=/root/.ipc
+        - --ipcdisable
         - --goerli
         ports:
         - name: rpc
@@ -44,7 +53,6 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /root/.ethereum
-          mountPath: /root/.ipc
   volumeClaimTemplates:
   - metadata:
       name: data
