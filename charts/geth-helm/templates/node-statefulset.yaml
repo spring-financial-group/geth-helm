@@ -20,6 +20,25 @@ spec:
         app: {{ template "geth-helm.name" . }}
         release: {{ .Release.Name }}
     spec:
+      hostIPC: true
+      initContainers:
+#        - name: volumne-permissions
+#          image: {{ .Values.geth.image.repository }}:{{ .Values.geth.image.tag }}
+#          command: ["/bin/sh"]
+#          args: ["-c", "chmod -R 755 /root/.ethereum"]
+#          volumeMounts:
+#            - name: data
+#              mountPath: /root/.ethereum
+        - name: geth-init
+          image: {{ .Values.geth.image.repository }}:{{ .Values.geth.image.tag }}
+          command: ["geth"]
+          args: ["init", "/root/.ethereum/.genesis"]
+          volumeMounts:
+            - name: data
+              mountPath: /root/.ethereum
+            - name: config
+              mountPath: /root/.ethereum/.genesis
+              subPath: genesis.json
       containers:
       - name: geth
         image: {{ .Values.geth.image.repository }}:{{ .Values.geth.image.tag }}
@@ -36,15 +55,19 @@ spec:
         - --http.vhosts=*
         - --http.addr=0.0.0.0
         - --cache=1024
-        - --ipcpath=/root/.ipc
-        - --goerli
+        - --ipcdisable
+        - --datadir=/root/.ethereum/
         ports:
         - name: rpc
           containerPort: 8545
         volumeMounts:
         - name: data
           mountPath: /root/.ethereum
-          mountPath: /root/.ipc
+      volumes:
+        - name: config
+          configMap:
+              name: {{ template "geth-helm.name" . }}-config
+
   volumeClaimTemplates:
   - metadata:
       name: data
