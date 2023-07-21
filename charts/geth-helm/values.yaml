@@ -7,3 +7,6 @@ geth:
   storageClass: azurefile
   storage: 5Gi
   accessMode: ReadWriteMany
+image:
+  repository: jx3mqubebuild.azurecr.io/spring-financial-group/geth-helm
+  tag: 0.0.33
