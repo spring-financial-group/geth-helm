@@ -1,17 +1,17 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: {{ template "geth-helm.name" . }}-service
+  name: {{ template "geth-node.name" . }}-service
   labels:
-    app: {{ template "geth-helm.name" . }}
-    chart: {{ template "geth-helm.chart" . }}
+    app: {{ template "geth-node.name" . }}
+    chart: {{ template "geth-node.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   selector:
-    app: {{ template "geth-helm.name" . }}
+    app: {{ template "geth-node.name" . }}
     release: {{ .Release.Name }}
   type: ClusterIP
   ports:
-  - name: rpc
-    port: 8545
+    - name: rpc
+      port: 8545

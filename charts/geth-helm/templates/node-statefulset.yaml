@@ -1,58 +1,57 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ template "geth-helm.fullname" . }}
+  name: {{ template "geth-node.fullname" . }}
   labels:
-    app: {{ template "geth-helm.name" . }}
-    chart: {{ template "geth-helm.chart" . }}
+    app: {{ template "geth-node.name" . }}
+    chart: {{ template "geth-node.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  serviceName: {{ template "geth-helm.fullname" . }}
+  serviceName: {{ template "geth-node.fullname" . }}
   replicas: {{ .Values.geth.replicaCount }}
   selector:
     matchLabels:
-      app: {{ template "geth-helm.name" . }}
+      app: {{ template "geth-node.name" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ template "geth-helm.name" . }}
+        app: {{ template "geth-node.name" . }}
         release: {{ .Release.Name }}
     spec:
       containers:
-      - name: geth
-        image: {{ .Values.geth.image.repository }}:{{ .Values.geth.image.tag }}
+        - name: geth
+          image: {{ .Values.geth.image.repository }}:{{ .Values.geth.image.tag }}
+          resources:
+            requests:
+              memory: "8000Mi"
+            limits:
+              memory: "8500Mi"
+          imagePullPolicy: {{ .Values.geth.imagePullPolicy }}
+          command: ["geth"]
+          args:
+            - --http
+            - --http.corsdomain=*
+            - --http.vhosts=*
+            - --http.addr=0.0.0.0
+            - --cache=1024
+          ports:
+            - name: rpc
+              containerPort: 8545
+          volumeMounts:
+            - name: data
+              mountPath: /root/.ethereum
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        labels:
+          app: {{ template "geth-node.name" . }}
+          release: "{{ .Release.Name }}"
+      spec:
+        storageClassName: {{ .Values.geth.storageClass }}
+        accessModes:
+          - {{ .Values.geth.accessMode }}
         resources:
           requests:
-            memory: "8000Mi"
-          limits:
-            memory: "8500Mi"
-        imagePullPolicy: {{ .Values.geth.imagePullPolicy }}
-        command: ["geth"]
-        args:
-        - --http
-        - --http.corsdomain=*
-        - --http.vhosts=*
-        - --http.addr=0.0.0.0
-        - --cache=1024
-        - --goerli
-        ports:
-        - name: rpc
-          containerPort: 8545
-        volumeMounts:
-        - name: data
-          mountPath: /root/.ipc
-  volumeClaimTemplates:
-  - metadata:
-      name: data
-      labels:
-        app: {{ template "geth-helm.name" . }}
-        release: "{{ .Release.Name }}"
-    spec:
-      storageClassName: {{ .Values.geth.storageClass }}
-      accessModes:
-        - {{ .Values.geth.accessMode | quote }}
-      resources:
-          requests:
-            storage: {{ .Values.geth.storage | quote }}
+            storage: {{ .Values.geth.storage }}
