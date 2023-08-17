@@ -7,3 +7,4 @@ geth:
   storageClass: azurefile
   storage: 5Gi
   accessMode: ReadWriteMany
+  memory: 2Gi

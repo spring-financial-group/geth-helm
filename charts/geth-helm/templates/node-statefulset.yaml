@@ -25,9 +25,9 @@ spec:
           image: {{ .Values.geth.image.repository }}:{{ .Values.geth.image.tag }}
           resources:
             requests:
-              memory: "8000Mi"
+              memory: {{ .Values.geth.memory }}
             limits:
-              memory: "8500Mi"
+              memory: {{ .Values.geth.memory }}
           imagePullPolicy: {{ .Values.geth.imagePullPolicy }}
           command: ["geth"]
           args:
@@ -36,6 +36,7 @@ spec:
             - --http.vhosts=*
             - --http.addr=0.0.0.0
             - --cache=1024
+            - --ipcdisable
           ports:
             - name: rpc
               containerPort: 8545
