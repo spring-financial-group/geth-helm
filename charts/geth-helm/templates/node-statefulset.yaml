@@ -36,14 +36,12 @@ spec:
         - --http.vhosts=*
         - --http.addr=0.0.0.0
         - --cache=1024
-        - --ipcpath=/root/.ipc
         - --goerli
         ports:
         - name: rpc
           containerPort: 8545
         volumeMounts:
         - name: data
-          mountPath: /root/.ethereum
           mountPath: /root/.ipc
   volumeClaimTemplates:
   - metadata:
