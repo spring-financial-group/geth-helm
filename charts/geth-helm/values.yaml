@@ -8,3 +8,6 @@ geth:
   storage: 5Gi
   accessMode: ReadWriteMany
   memory: 2Gi
+image:
+  repository: jx3mqubebuild.azurecr.io/spring-financial-group/geth-helm
+  tag: 0.1.0
