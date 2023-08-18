@@ -13,24 +13,27 @@ data:
       geth --datadir {{ .Values.geth.dataDir }} account new --password password/accountPassword | grep "Public address" | cut -d ':' -f 2 | xargs echo -n > $FILE
     fi
     ACCOUNTADDRESS=$(cat $FILE)
-    ACCOUNTADDRESSNO0X=$(echo $ACCOUNTADDRESS | cut -c 3- | tr '[:upper:]' '[:lower:]' )
-    echo "INFO Rendered Account Address $ACCOUNTADDRESSNO0X"
+    ACCOUNTADDRESSNO0X=$(echo $ACCOUNTADDRESS | cut -c 3- )
+    ACCOUNTADDRESSNO0XLOWERCASE=$(echo $ACCOUNTADDRESSNO0X | tr '[:upper:]' '[:lower:]' )
 {{- end }}
 {{- if .Values.geth.networkId }}
     echo "INFO Generating initial block from genesis file"
     cat genesis.json > genesis-actual.json
-    sed -i -e "s/MINERWALLETREPLACE/$ACCOUNTADDRESSNO0X/g" /genesis-actual.json
+    sed -i -e "s/MINERWALLETREPLACEWITHUPPERCASE/$ACCOUNTADDRESSNO0X/g" /genesis-actual.json
+    sed -i -e "s/MINERWALLETREPLACEWITHLOWERCASE/$ACCOUNTADDRESSNO0XLOWERCASE/g" /genesis-actual.json
     geth init --datadir {{ .Values.geth.dataDir }} genesis-actual.json
 {{- end }}
     echo "INFO Genesis block generated, now starting the miner for the account --$ACCOUNTADDRESS--"
     geth \
-    --password password/accountPassword
+    --password password/accountPassword \
 {{- if .Values.geth.networkId }}
     --networkid {{ int .Values.geth.networkId }} \
 {{- end }}
     --http --http.corsdomain=* --http.vhosts=* --http.addr=0.0.0.0 --http.api=eth,net,web3,debug,personal,engine,admin,txpool --cache=1024 \
     --ipcdisable \
     --datadir {{ .Values.geth.dataDir }} \
+    --unlock $ACCOUNTADDRESS \
+    --allow-insecure-unlock \
     --mine \
 {{- if (.Values.geth.accountAddress) }}
     --miner.etherbase {{ .Values.geth.accountAddress }}
