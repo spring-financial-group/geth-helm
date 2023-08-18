@@ -9,3 +9,6 @@ geth:
   accessMode: ReadWriteMany
   memory: 2Gi
   networkid: 10319988
+image:
+  repository: jx3mqubebuild.azurecr.io/spring-financial-group/geth-helm
+  tag: 1.0.1
