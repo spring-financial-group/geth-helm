@@ -10,3 +10,6 @@ geth:
   memory: 2Gi
   networkid: 10319988
   datadir: /root/.ethereum
+image:
+  repository: jx3mqubebuild.azurecr.io/spring-financial-group/geth-helm
+  tag: 1.0.2
