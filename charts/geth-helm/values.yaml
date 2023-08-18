@@ -8,3 +8,4 @@ geth:
   storage: 5Gi
   accessMode: ReadWriteMany
   memory: 2Gi
+  networkid: 10319988

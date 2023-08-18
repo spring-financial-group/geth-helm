@@ -29,20 +29,31 @@ spec:
             limits:
               memory: {{ .Values.geth.memory }}
           imagePullPolicy: {{ .Values.geth.imagePullPolicy }}
-          command: ["geth"]
-          args:
-            - --http
-            - --http.corsdomain=*
-            - --http.vhosts=*
-            - --http.addr=0.0.0.0
-            - --cache=1024
-            - --ipcdisable
+          command: [ "/bin/sh", "startup.sh" ]
           ports:
             - name: rpc
               containerPort: 8545
           volumeMounts:
             - name: data
               mountPath: /root/.ethereum
+            - name: geth-startup
+              mountPath: /startup.sh
+              subPath: startup.sh
+{{- if .Values.geth.networkid }}
+            - name: genesis-cfg
+              mountPath: /genesis.json
+              subPath: genesis.json
+{{- end}}
+      volumes:
+        - name: geth-startup
+          configMap:
+            defaultMode: 0700
+            name: geth-startup
+{{- if .Values.geth.networkid }}
+        - name: genesis-cfg
+          configMap:
+            name: geth-config
+{{- end}}
   volumeClaimTemplates:
     - metadata:
         name: data

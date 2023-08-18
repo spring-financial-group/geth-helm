@@ -1,0 +1,41 @@
+{{- if .Values.geth.networkid }}
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: geth-config
+data:
+  genesis.json: |
+    {
+      "config": {
+        "chainId": {{ int .Values.geth.networkid }},
+        "homesteadBlock": 0,
+        "daoForkSupport": true,
+        "eip150Block": 0,
+        "eip150Hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "eip155Block": 0,
+        "eip158Block": 0,
+        "byzantiumBlock": 0,
+        "constantinopleBlock": 0,
+        "petersburgBlock": 0,
+        "istanbulBlock": 0,
+        "muirGlacierBlock": 0,
+        "berlinBlock": 0,
+        "londonBlock": 0,
+        "arrowGlacierBlock": 0,
+        "grayGlacierBlock": 0,
+        "clique": {
+          "period": 15,
+          "epoch": 30000
+        }
+      },
+      "difficulty": "1",
+      "gasLimit": "800000000",
+      "extradata": "0x0000000000000000000000000000000000000000000000000000000000000000d1c4aa35fc956ed8d5e56ebf42fb47554cb4eb170000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "alloc": {
+        "D1c4Aa35fc956eD8D5E56eBF42fb47554cB4EB17": { "balance": "100000000000000000000" },
+        "4423BA19BF06aac4c4eB28C0e8764e985b044328": { "balance": "50000000000000000000" },
+        "6437DA12A8888D79eF18550D35CD5240904a1149": { "balance": "25000000000000000000" }
+      },
+      "baseFeePerGas": null
+    }
+{{- end }}
