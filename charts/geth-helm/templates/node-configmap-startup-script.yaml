@@ -7,21 +7,22 @@ data:
     #!/bin/sh
 
 {{- if not (.Values.geth.accountAddress) }}
-    echo "No account specified, so looking if we need to create an account to mine with"
+    echo "INFO No account specified, so looking if we need to create an account to mine with"
     FILE={{ .Values.geth.dataDir }}/accounts/minerAccount
     if [ ! -f "$FILE" ]; then
       geth --datadir {{ .Values.geth.dataDir }} account new --password password/accountPassword | grep "Public address" | cut -d ':' -f 2 | xargs echo -n > $FILE
     fi
     ACCOUNTADDRESS=$(cat $FILE)
-    ACCOUNTADDRESSNO0X=$(echo $ACCOUNTADDRESS | cut -c 3-)
+    ACCOUNTADDRESSNO0X=$(echo $ACCOUNTADDRESS | cut -c 3- | tr '[:upper:]' '[:lower:]' )
+    echo "INFO Rendered Account Address $ACCOUNTADDRESSNO0X"
 {{- end }}
 {{- if .Values.geth.networkId }}
-    echo "Generating initial block from genesis file"
-    cat genesis.json >> genesis-actual.json
+    echo "INFO Generating initial block from genesis file"
+    cat genesis.json > genesis-actual.json
     sed -i -e "s/MINERWALLETREPLACE/$ACCOUNTADDRESSNO0X/g" /genesis-actual.json
     geth init --datadir {{ .Values.geth.dataDir }} genesis-actual.json
 {{- end }}
-    echo "Genesis block generated, now starting the miner for the account --$ACCOUNTADDRESS--"
+    echo "INFO Genesis block generated, now starting the miner for the account --$ACCOUNTADDRESS--"
     geth \
     --password password/accountPassword
 {{- if .Values.geth.networkId }}
