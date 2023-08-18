@@ -14,3 +14,6 @@ geth:
   accountSecrets:
   generatedPasswordSecretName:
   initialWalletAmount: 100000000000000000000
+image:
+  repository: jx3mqubebuild.azurecr.io/spring-financial-group/geth-helm
+  tag: 2.0.0
