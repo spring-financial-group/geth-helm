@@ -1,13 +1,13 @@
-{{- if .Values.geth.networkid }}
+{{- if .Values.geth.networkId }}
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: geth-config
+  name: {{ template "geth-node.fullname" . }}-config
 data:
   genesis.json: |
     {
       "config": {
-        "chainId": {{ int .Values.geth.networkid }},
+        "chainId": {{ int .Values.geth.networkId }},
         "homesteadBlock": 0,
         "daoForkSupport": true,
         "eip150Block": 0,
@@ -30,12 +30,17 @@ data:
       },
       "difficulty": "1",
       "gasLimit": "800000000",
-      "extradata": "0x0000000000000000000000000000000000000000000000000000000000000000d1c4aa35fc956ed8d5e56ebf42fb47554cb4eb170000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+{{- if not .Values.geth.accountAddress }}
+      "extradata": "0x0000000000000000000000000000000000000000000000000000000000000000MINERWALLETREPLACE0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
       "alloc": {
-        "D1c4Aa35fc956eD8D5E56eBF42fb47554cB4EB17": { "balance": "100000000000000000000" },
-        "4423BA19BF06aac4c4eB28C0e8764e985b044328": { "balance": "50000000000000000000" },
-        "6437DA12A8888D79eF18550D35CD5240904a1149": { "balance": "25000000000000000000" }
+        "MINERWALLETREPLACE": { "balance": "{{ int .Values.geth.initialWalletAmount }}" }
       },
+{{- else}}
+      "extradata": "0x0000000000000000000000000000000000000000000000000000000000000000{{ .Values.geth.accountAddress }}0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "alloc": {
+        "{{ .Values.geth.accountAddress }}": { "balance": "{{ int .Values.geth.initialWalletAmount }}" }
+      },
+{{- end }}
       "baseFeePerGas": null
     }
-{{- end }}
+    {{- end }}

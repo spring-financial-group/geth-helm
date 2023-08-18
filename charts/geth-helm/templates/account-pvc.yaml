@@ -1,0 +1,13 @@
+{{- if not (.Values.geth.accountAddress) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ template "geth-node.fullname" . }}-account-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: azurefile
+  resources:
+    requests:
+      storage: 1Mi
+{{- end }}

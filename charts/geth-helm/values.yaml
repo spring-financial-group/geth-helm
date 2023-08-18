@@ -8,5 +8,9 @@ geth:
   storage: 5Gi
   accessMode: ReadWriteMany
   memory: 2Gi
-  networkid: 10319988
-  datadir: /root/.ethereum
+  networkId: 10319988
+  dataDir: /root/.ethereum
+  accountAddress:
+  accountSecrets:
+  generatedPasswordSecretName:
+  initialWalletAmount: 100000000000000000000

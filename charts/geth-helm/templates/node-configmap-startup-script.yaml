@@ -1,23 +1,38 @@
-{{- if .Values.geth.networkid }}
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: geth-startup
+  name: {{ template "geth-node.fullname" . }}-startup
 data:
   startup.sh: |
     #!/bin/sh
 
-
-{{- if .Values.geth.networkid }}
+{{- if not (.Values.geth.accountAddress) }}
+    echo "No account specified, so looking if we need to create an account to mine with"
+    FILE={{ .Values.geth.dataDir }}/accounts/minerAccount
+    if [ ! -f "$FILE" ]; then
+      geth --datadir {{ .Values.geth.dataDir }} account new --password password/accountPassword | grep "Public address" | cut -d ':' -f 2 | xargs echo -n > $FILE
+    fi
+    ACCOUNTADDRESS=$(cat $FILE)
+    ACCOUNTADDRESSNO0X=$(echo $ACCOUNTADDRESS | cut -c 3-)
+{{- end }}
+{{- if .Values.geth.networkId }}
     echo "Generating initial block from genesis file"
-    geth init --datadir {{ .Values.geth.datadir }} genesis.json
-{{- end}}
-    echo "Genesis block generated, now starting the worker"
+    cat genesis.json >> genesis-actual.json
+    sed -i -e "s/MINERWALLETREPLACE/$ACCOUNTADDRESSNO0X/g" /genesis-actual.json
+    geth init --datadir {{ .Values.geth.dataDir }} genesis-actual.json
+{{- end }}
+    echo "Genesis block generated, now starting the miner for the account --$ACCOUNTADDRESS--"
     geth \
-{{- if .Values.geth.networkid }}
-    --networkid {{ int .Values.geth.networkid }} \
-{{- end}}
-    --http --http.corsdomain=* --http.vhosts=* --http.addr=0.0.0.0 --http.api=web3,eth,txpool,personal,ethash,net,les,vflux --cache=1024 \
+    --password password/accountPassword
+{{- if .Values.geth.networkId }}
+    --networkid {{ int .Values.geth.networkId }} \
+{{- end }}
+    --http --http.corsdomain=* --http.vhosts=* --http.addr=0.0.0.0 --http.api=eth,net,web3,debug,personal,engine,admin,txpool --cache=1024 \
     --ipcdisable \
-    --datadir {{ .Values.geth.datadir }}
+    --datadir {{ .Values.geth.dataDir }} \
+    --mine \
+{{- if (.Values.geth.accountAddress) }}
+    --miner.etherbase {{ .Values.geth.accountAddress }}
+{{- else}}
+    --miner.etherbase $ACCOUNTADDRESS
     {{- end }}

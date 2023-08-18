@@ -37,24 +37,60 @@ spec:
               containerPort: 8545
           volumeMounts:
             - name: data
-              mountPath: {{ .Values.geth.datadir }}
-            - name: geth-startup
+              mountPath: {{ .Values.geth.dataDir }}/geth
+            - name: {{ template "geth-node.fullname" . }}-startup
               mountPath: /startup.sh
               subPath: startup.sh
-{{- if .Values.geth.networkid }}
+{{- if .Values.geth.accountAddress }}
+            - name: key
+              mountPath: "{{.Values.geth.dataDir}}/keystore/"
+              readOnly: true
+{{- else}}
+            - name: {{ template "geth-node.fullname" . }}-account-pvc
+              mountPath: {{ .Values.geth.dataDir }}/accounts
+            - name: password
+              mountPath: "/password"
+              readOnly: true
+{{- end}}
+{{- if .Values.geth.networkId }}
             - name: genesis-cfg
               mountPath: /genesis.json
               subPath: genesis.json
 {{- end}}
       volumes:
-        - name: geth-startup
+        - name: {{ template "geth-node.fullname" . }}-startup
           configMap:
             defaultMode: 0700
-            name: geth-startup
-{{- if .Values.geth.networkid }}
+            name: {{ template "geth-node.fullname" . }}-startup
+{{- if .Values.geth.accountAddress }}
+        - name: key
+          secret:
+            secretName: {{ .Values.geth.accountSecrets }}
+            items:
+              - key: keyfile
+                path: UTC--1998-09-19T09-00-00.000000000Z--{{ .Values.geth.accountAddress }}
+{{- else}}
+        - name: key
+          persistentVolumeClaim:
+            claimName: {{ template "geth-node.fullname" . }}-keystore-pvc
+        - name: {{ template "geth-node.fullname" . }}-account-pvc
+          persistentVolumeClaim:
+            claimName: {{ template "geth-node.fullname" . }}-account-pvc
+        - name: password
+          secret:
+{{- if .Values.geth.generatedPasswordSecretName }}
+            secretName: {{ .Values.geth.generatedPasswordSecretName }}
+{{- else}}
+            secretName: {{ template "geth-node.fullname" . }}-generated-password
+{{- end}}
+            items:
+              - key: password
+                path: accountPassword
+{{- end}}
+{{- if .Values.geth.networkId }}
         - name: genesis-cfg
           configMap:
-            name: geth-config
+            name: {{ template "geth-node.fullname" . }}-config
 {{- end}}
   volumeClaimTemplates:
     - metadata:
