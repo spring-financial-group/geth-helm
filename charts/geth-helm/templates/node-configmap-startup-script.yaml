@@ -10,7 +10,7 @@ data:
 
 {{- if .Values.geth.networkid }}
     echo "Generating initial block from genesis file"
-    geth init --datadir {{ template "geth-node.name" . }} genesis.json
+    geth init --datadir {{ .Values.geth.datadir }} genesis.json
 {{- end}}
     echo "Genesis block generated, now starting the worker"
     geth \
@@ -19,5 +19,5 @@ data:
 {{- end}}
     --http --http.corsdomain=* --http.vhosts=* --http.addr=0.0.0.0 --http.api=web3,eth,txpool,personal,ethash,net,les,vflux --cache=1024 \
     --ipcdisable \
-    --datadir {{ template "geth-node.name" . }}
+    --datadir {{ .Values.geth.datadir }}
     {{- end }}

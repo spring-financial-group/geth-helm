@@ -9,3 +9,4 @@ geth:
   accessMode: ReadWriteMany
   memory: 2Gi
   networkid: 10319988
+  datadir: /root/.ethereum

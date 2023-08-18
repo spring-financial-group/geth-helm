@@ -10,6 +10,8 @@ metadata:
 spec:
   serviceName: {{ template "geth-node.fullname" . }}
   replicas: {{ .Values.geth.replicaCount }}
+  updateStrategy:
+    type: RollingUpdate
   selector:
     matchLabels:
       app: {{ template "geth-node.name" . }}
@@ -35,7 +37,7 @@ spec:
               containerPort: 8545
           volumeMounts:
             - name: data
-              mountPath: /root/.ethereum
+              mountPath: {{ .Values.geth.datadir }}
             - name: geth-startup
               mountPath: /startup.sh
               subPath: startup.sh
