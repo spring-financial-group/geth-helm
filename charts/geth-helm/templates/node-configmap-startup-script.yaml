@@ -18,5 +18,6 @@ data:
     --networkid {{ int .Values.geth.networkid }} \
 {{- end}}
     --http --http.corsdomain=* --http.vhosts=* --http.addr=0.0.0.0 --http.api=web3,eth,txpool,personal,ethash,net,les,vflux --cache=1024 \
-    --ipcdisable
+    --ipcdisable \
+    --datadir {{ template "geth-node.name" . }}
     {{- end }}
