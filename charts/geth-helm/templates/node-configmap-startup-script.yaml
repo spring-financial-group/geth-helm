@@ -11,6 +11,8 @@ data:
     FILE={{ .Values.geth.dataDir }}/accounts/minerAccount
     if [ ! -f "$FILE" ]; then
       geth --datadir {{ .Values.geth.dataDir }} account new --password password/accountPassword | grep "Public address" | cut -d ':' -f 2 | xargs echo -n > $FILE
+    else
+      echo "INFO Account already exists, reusing that one"
     fi
     ACCOUNTADDRESS=$(cat $FILE)
     ACCOUNTADDRESSNO0X=$(echo $ACCOUNTADDRESS | cut -c 3- )
