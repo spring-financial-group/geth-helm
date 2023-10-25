@@ -13,5 +13,7 @@ spec:
     release: {{ .Release.Name }}
   type: ClusterIP
   ports:
-    - name: rpc
-      port: 8545
+    - port: {{ .Values.service.rpcPort }}
+      targetPort: {{ .Values.service.rpcPort }}
+      protocol: TCP
+      name: http

@@ -14,3 +14,10 @@ geth:
   accountSecrets:
   generatedPasswordSecretName:
   initialWalletAmount: 100000000000000000000
+
+service:
+  rpcPort: 8545
+
+ingress:
+  enabled: true
+  domain: mqube-oss.com

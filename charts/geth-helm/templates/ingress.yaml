@@ -1,0 +1,23 @@
+{{ if .Values.ingress.enabled -}}
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - http:
+        paths:
+          - pathType: {{ .Values.ingress.pathType | default "ImplementationSpecific" }}
+            backend:
+              service:
+                name: {{ template "geth-node.name" . }}-service
+                port:
+                  number: {{ .Values.service.rpcPort }}
+      host: {{ template "geth-node.name" . }}-service.{{ .Values.ingress.domain }}
+  tls:
+    - hosts:
+        - {{ template "geth-node.name" . }}-service.{{ .Values.ingress.domain }}
+      secretName: {{ .Values.ingress.tlsSecretName }}
+{{- end }}
