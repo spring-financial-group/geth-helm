@@ -13,7 +13,7 @@ geth:
   accountAddress:
   accountSecrets:
   generatedPasswordSecretName:
-  initialWalletAmount: 100000000000000000000
+  initialWalletAmount: 10000000000
 
 service:
   rpcPort: 8545
