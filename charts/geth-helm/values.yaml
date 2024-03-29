@@ -14,10 +14,11 @@ geth:
   accountSecrets:
   generatedPasswordSecretName:
   initialWalletAmount: 10000000000
-
 service:
   rpcPort: 8545
-
 ingress:
   enabled: true
   domain: mqube-oss.com
+image:
+  repository: jx3mqubebuild.azurecr.io/spring-financial-group/geth-helm
+  tag: 2.1.13
